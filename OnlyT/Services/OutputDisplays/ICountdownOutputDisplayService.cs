@@ -1,4 +1,6 @@
-﻿namespace OnlyT.Services.OutputDisplays
+﻿using OnlyT.Services.CountdownTimer;
+
+namespace OnlyT.Services.OutputDisplays
 {
     public interface ICountdownOutputDisplayService
     {
@@ -18,7 +20,7 @@
 
         bool OpenWindowWindowed();
 
-        void Start(int offsetSeconds);
+        void Start(IsInCountdownPeriodResult countdownPeriodResult);
 
         void Stop();
 

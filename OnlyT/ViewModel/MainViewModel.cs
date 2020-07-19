@@ -359,9 +359,9 @@ namespace OnlyT.ViewModel
             if (_optionsService.CanDisplayCountdownWindow && 
                 !CountDownActive && 
                 !_countdownDisplayService.IsCountdownDone && 
-                _countdownTimerTriggerService.IsInCountdownPeriod(out var secondsOffset))
+                _countdownTimerTriggerService.IsInCountdownPeriod(out var result))
             {
-                StartCountdown(secondsOffset);
+                StartCountdown(result);
             }
         }
 
@@ -444,13 +444,13 @@ namespace OnlyT.ViewModel
         /// <param name="offsetSeconds">
         /// The offset in seconds (the timer already started offsetSeconds ago).
         /// </param>
-        private void StartCountdown(int offsetSeconds)
+        private void StartCountdown(IsInCountdownPeriodResult countdownPeriodResult)
         {
             if (!IsInDesignMode && _optionsService.CanDisplayCountdownWindow)
             {
                 Log.Logger.Information("Launching countdown timer");
 
-                _countdownDisplayService.Start(offsetSeconds);
+                _countdownDisplayService.Start(countdownPeriodResult);
 
                 bool launched = _optionsService.Options.CountdownMonitorIsWindowed 
                     ? _countdownDisplayService.OpenWindowWindowed() 

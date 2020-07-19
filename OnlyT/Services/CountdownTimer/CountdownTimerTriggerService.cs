@@ -7,6 +7,13 @@
     using Options;
     using Options.MeetingStartTimes;
 
+    public struct IsInCountdownPeriodResult
+    {
+        public int SecondsOffset { get; set; }
+
+        public MeetingStartTime MeetingStartTime { get; set; }
+    }
+
     // ReSharper disable once ClassNeverInstantiated.Global
     internal sealed class CountdownTimerTriggerService : ICountdownTimerTriggerService
     {
@@ -39,8 +46,10 @@
             }
         }
 
-        public bool IsInCountdownPeriod(out int secondsOffset)
+        public bool IsInCountdownPeriod(out IsInCountdownPeriodResult result)
         {
+            result = new IsInCountdownPeriodResult();
+
             lock (_locker)
             {
                 if (_triggerPeriods != null)
@@ -50,13 +59,15 @@
                     var trigger = _triggerPeriods.FirstOrDefault(x => x.Start <= now && x.End > now);
                     if (trigger != null)
                     {
-                        secondsOffset = (int)(now - trigger.Start).TotalSeconds;
-                        return secondsOffset >= 5;
+                        result.MeetingStartTime = trigger.MeetingStartTime;
+                        result.SecondsOffset = (int)(now - trigger.Start).TotalSeconds;
+                        return result.SecondsOffset >= 5;
                     }
                 }
             }
 
-            secondsOffset = 0;
+            result.SecondsOffset = 0;
+
             return false;
         }
 
@@ -76,7 +87,8 @@
                         Start = today.Add(
                             TimeSpan.FromMinutes(
                                 (time.StartTime.Hours * 60) + time.StartTime.Minutes - countdownDurationMins)),
-                        End = today.Add(new TimeSpan(time.StartTime.Hours, time.StartTime.Minutes, 0))
+                        End = today.Add(new TimeSpan(time.StartTime.Hours, time.StartTime.Minutes, 0)),
+                        MeetingStartTime = time
                     });
                 }
             }

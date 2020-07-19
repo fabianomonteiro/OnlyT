@@ -7,6 +7,7 @@
         xmlns:valueConverters="clr-namespace:OnlyT.ValueConverters"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:behaviours="clr-namespace:OnlyT.Behaviours"
+        xmlns:clock="clr-namespace:OnlyT.AnalogueClock;assembly=OnlyT.AnalogueClock"
         DataContext="{Binding Source={StaticResource Locator}, Path=Countdown}"
         mc:Ignorable="d"
         WindowStyle="None" Background="{Binding Path=IsWindowTransparent, Converter={StaticResource ToBackgroundConverter}}" 
@@ -15,7 +16,8 @@
         Closing="WindowClosing"
         MouseDown="Window_MouseDown"
         Title="OnlyT Countdown Output" Height="305.825" Width="469.418" 
-        Cursor="{Binding MousePointer}">
+        Cursor="{Binding MousePointer}"
+        Loaded="WindowLoaded">
 
     <WindowChrome.WindowChrome>
         <WindowChrome 
@@ -28,34 +30,129 @@
     </i:Interaction.Behaviors>
 
     <Grid>
-        <Border Name="ClockPanel" 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Border Name="ClockPanel" 
                 HorizontalAlignment="{Binding HorizontalAlignment}"
                 VerticalAlignment="{Binding VerticalAlignment}"
-                CornerRadius="20" Grid.Column="0" 
+                CornerRadius="20" 
+                Grid.Column="0" 
                 BorderBrush="Beige" 
                 BorderThickness="{Binding BorderThickness}" 
-                Width="{Binding Parent.ActualWidth, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                Height="{Binding Parent.ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                Padding="10">
-            
-            <Border.LayoutTransform>
-                <ScaleTransform CenterX="0" CenterY="0" ScaleX="{Binding CountdownScale}" ScaleY="{Binding CountdownScale}"/>
-            </Border.LayoutTransform>
+                Width="1366"
+                Height="768"
+                Padding="0">
 
-            <Border.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding BackgroundOpacity}">
-                    <GradientStop Color="Black" Offset="1"/>
-                    <GradientStop Color="#FF5D4343"/>
-                </LinearGradientBrush>
-            </Border.Background>
+                <Border.LayoutTransform>
+                    <ScaleTransform CenterX="0" CenterY="0" ScaleX="{Binding CountdownScale}" ScaleY="{Binding CountdownScale}"/>
+                </Border.LayoutTransform>
 
-            <countdownTimer:CountdownControl 
-                x:Name="CountDown" 
-                QueryUtcDateTimeEvent="CountDownQueryUtcDateTime"
-                CountdownDurationMins="{Binding CountdownDurationMins}"
-                ElementsToShow="{Binding ElementsToShow}"
-                Margin="10" TimeUpEvent="OnCountDownTimeUp"/>
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding BackgroundOpacity}">
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="#FF5D4343"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
-        </Border>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1.5*" />
+                    </Grid.RowDefinitions>
+                    <Viewbox Grid.Row="0" 
+                             VerticalAlignment="Bottom">
+                        <StackPanel Margin="0 15 0 0">
+                            <TextBlock FontSize="24"
+                                       Foreground="White"
+                                       FontWeight="Thin"
+                                       Text="{Binding MeetingDescription}"
+                                       Margin="0 0 0 0"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock FontSize="24"
+                                       Foreground="White"
+                                       FontWeight="Thin"
+                                       Text="{Binding Congregation}"
+                                       Margin="0 0 0 0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Viewbox>
+                    <countdownTimer:CountdownControl x:Name="CountDown"
+                                                     VerticalAlignment="Top"
+                                                     HorizontalAlignment="Center"
+                                                     QueryUtcDateTimeEvent="CountDownQueryUtcDateTime"
+                                                     CountdownDurationMins="{Binding CountdownDurationMins}"
+                                                     ElementsToShow="{Binding ElementsToShow}"
+                                                     Margin="0 130 0 0" TimeUpEvent="OnCountDownTimeUp"
+                                                     Grid.Row="1" />
+                </Grid>
+            </Border>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Border Name="ClockPanel2" 
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,15,5,0"
+                    CornerRadius="20" 
+                    Grid.Column="0" 
+                    Grid.ColumnSpan="2" 
+                    BorderBrush="Beige" 
+                    BorderThickness="{Binding BorderThickness}" 
+                    Padding="10" 
+                    Width="{Binding Parent.ActualWidth, Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                    Height="{Binding Parent.ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}">
+
+                <Border.LayoutTransform>
+                    <ScaleTransform CenterX="0"
+                                    CenterY="0" 
+                                    ScaleX="{Binding CountdownScale}" 
+                                    ScaleY="{Binding CountdownScale}"/>
+                </Border.LayoutTransform>
+
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" 
+                                         StartPoint="0.5,0" 
+                                         Opacity="{Binding BackgroundOpacity}">
+                        <GradientStop Color="Black" 
+                                      Offset="1"/>
+                        <GradientStop Color="#FF5D4343"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid Name="ClockGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+
+                    <clock:ClockControl x:Name="TheClock" 
+                                        Grid.Row="0" 
+                                        Margin="15" 
+                                        QueryDateTimeEvent="ClockQueryDateTimeEvent"
+                                        IsFlat="{Binding ClockIsFlat}"
+                                        DigitalTimeFormatShowLeadingZero="{Binding DigitalTimeFormatShowLeadingZero}"
+                                        DigitalTimeFormat24Hours="{Binding DigitalTimeFormat24Hours}"
+                                        DigitalTimeFormatAMPM="{Binding DigitalTimeFormatAMPM}" />
+
+                    <Viewbox Grid.Row="1" >
+                        <TextBlock VerticalAlignment="Bottom" 
+                                   Margin="5,0,5,0">
+                            <TextBlock Foreground="White" 
+                                       FontSize="24" 
+                                       FontWeight="Bold" 
+                                       Text="{Binding CurrentTimeHrMin, ElementName=TheClock, Mode=OneWay}"/>
+                            <TextBlock Foreground="White" 
+                                       FontSize="13"
+                                       Margin="-2,-8,0,0"
+                                       Visibility="{Binding Path=DigitalTimeShowSeconds, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Text="{Binding CurrentTimeSec, ElementName=TheClock, Mode=OneWay}"/>
+                        </TextBlock>
+                    </Viewbox>
+                </Grid>
+
+            </Border>
+        </Grid>
     </Grid>
 </Window>

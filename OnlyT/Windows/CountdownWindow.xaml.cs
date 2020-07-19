@@ -6,9 +6,11 @@
     using System.Windows;
     using System.Windows.Input;
     using GalaSoft.MvvmLight.Threading;
-    using OnlyT.Common.Services.DateTime;
+	using OnlyT.AnalogueClock;
+	using OnlyT.Common.Services.DateTime;
     using OnlyT.CountdownTimer;
-    using OnlyT.Services.Options;
+	using OnlyT.Services.CountdownTimer;
+	using OnlyT.Services.Options;
     using OnlyT.Utils;
     using OnlyT.ViewModel;
 
@@ -61,9 +63,14 @@
             _optionsService.Save();
         }
 
-        public void Start(int offsetSeconds)
+        public void Start(IsInCountdownPeriodResult countdownPeriodResult)
         {
-            CountDown.Start(offsetSeconds);
+            CountDown.Start(countdownPeriodResult.SecondsOffset);
+
+            var model = (CountdownTimerViewModel)DataContext;
+
+            model.Congregation = countdownPeriodResult.MeetingStartTime.Congregation;
+            model.MeetingDescription = countdownPeriodResult.MeetingStartTime.MeetingDescription;
         }
 
         private void OnCountDownTimeUp(object sender, EventArgs e)
@@ -74,6 +81,11 @@
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(OnTimeUpEvent);
             });
+        }
+
+        private void WindowLoaded(object sender, RoutedEventArgs e)
+        {
+            TheClock.IsRunning = true;
         }
 
         private void OnTimeUpEvent()
@@ -120,6 +132,11 @@
             {
                 DragMove();
             }
+        }
+
+        private void ClockQueryDateTimeEvent(object sender, DateTimeQueryEventArgs e)
+        {
+            e.DateTime = _dateTimeService.Now();
         }
     }
 }

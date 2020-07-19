@@ -1,8 +1,10 @@
-﻿namespace OnlyT.Services.CountdownTimer
+﻿using OnlyT.Services.Options.MeetingStartTimes;
+
+namespace OnlyT.Services.CountdownTimer
 {
     public interface ICountdownTimerTriggerService
     {
-        bool IsInCountdownPeriod(out int secondsOffset);
+        bool IsInCountdownPeriod(out IsInCountdownPeriodResult result);
 
         void UpdateTriggerPeriods();
     }

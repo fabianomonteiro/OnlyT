@@ -6,7 +6,8 @@
     using GalaSoft.MvvmLight.Messaging;
     using GalaSoft.MvvmLight.Threading;
     using OnlyT.Common.Services.DateTime;
-    using OnlyT.Services.Monitors;
+	using OnlyT.Services.CountdownTimer;
+	using OnlyT.Services.Monitors;
     using OnlyT.Services.Options;
     using OnlyT.Services.Snackbar;
     using OnlyT.ViewModel;
@@ -123,13 +124,13 @@
             return false;
         }
 
-        public void Start(int offsetSeconds)
+        public void Start(IsInCountdownPeriodResult countdownPeriodResult)
         {
             EnsureCountdownWindowExists();
             
             IsCountingDown = true;
 
-            _countdownWindow.Start(offsetSeconds);
+            _countdownWindow.Start(countdownPeriodResult);
         }
 
         public void SaveWindowedPos()

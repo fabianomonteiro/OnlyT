@@ -169,6 +169,11 @@
 
             result.Add(new CountdownDurationItem { DurationMins = 45 });
             result.Add(new CountdownDurationItem { DurationMins = 60 });
+            result.Add(new CountdownDurationItem { DurationMins = 120 });
+            result.Add(new CountdownDurationItem { DurationMins = 240 });
+            result.Add(new CountdownDurationItem { DurationMins = 480 });
+            result.Add(new CountdownDurationItem { DurationMins = 960 });
+            result.Add(new CountdownDurationItem { DurationMins = 1440 });
 
             return result.ToArray();
         }
